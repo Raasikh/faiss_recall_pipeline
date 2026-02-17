@@ -61,17 +61,3 @@ Scans every vector. Perfect recall but O(N) per query. Too slow at scale — thi
 ### IVF-HNSW
 - **Build:** HNSW finds centroids fast, IVF scans within clusters
 - **Best of both:** fast coarse search + fine-grained scanning
-
-## Interview Talking Points
-
-**"How did you improve retrieval recall by 18%?"**
-
-> "Our RAG stack was missing relevant documents. I built a labeled evaluation set and measured recall@10 under a latency budget. The baseline was a simple IVF index with default parameters. I restructured the index — tried IVF, HNSW, and IVF-HNSW configurations — and then swept ANN parameters like nprobe and efSearch. For each configuration I measured recall@K and P95 latency. The best config improved recall@10 by about 18% relative at the same latency budget, which directly improved downstream answer quality."
-
-**"How did you get ground-truth relevance labels?"**
-
-> "We sampled real queries from logs, assembled candidate sets using multiple retrieval methods (exact search, BM25, high-recall ANN), and got relevance labels through a mix of human annotation for high-value queries and implicit feedback (dwell time, conversions) as weak labels for the long tail."
-
-**"How did you deal with the latency-recall trade-off?"**
-
-> "I treated it as a joint objective. I swept parameters, measured both recall@K and P95 latency for each config, eliminated anything exceeding our latency target, and picked the highest-recall config from what remained."
